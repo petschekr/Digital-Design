@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html land="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Digital Design</title>
+		
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fjalla+One|Open+Sans:400,700" />
+		<style>
+			body, html {
+				height: 100%;
+			}
+			body {
+				margin: 0;
+			}
+
+			#container {
+				width: 100%;
+				height: 100%;
+				position: relative;
+				overflow: hidden;
+				
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			#container video {
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				/* The following will size the video to fit the full container. Not necessary, just nice. */
+				min-width: 100%;
+				min-height: 100%;
+				-webkit-transform: translate(-50%,-50%);
+				-moz-transform: translate(-50%,-50%);
+				-ms-transform: translate(-50%,-50%);
+				transform: translate(-50%,-50%);
+				z-index: -1;
+			}
+			.page {
+				width: 100%;
+				height: 100%;
+			}
+			.image {
+				height: 100%;
+				width: 100%;
+				background-size: contain;
+				background-repeat: no-repeat;
+				background-position: center center;
+				background-color: black;
+				border-top: 3px solid white;
+			}
+			.image.small {
+				height: calc(100% / 50);
+				width: 100%;
+				background-size: cover; /* Instead of contain */
+				background-repeat: no-repeat;
+				background-position: center center;
+				border-top: none;
+				background-color: rgba(0,0,0,0);
+			}
+			h1 {
+				font-family: "Fjalla One", sans-serif;
+				color: white;
+				font-size: 120px;
+			}
+			h1.title {
+				position: fixed;
+				width: 560px;
+				left: calc(50% - (560px / 2));
+				z-index: -1;
+				top: calc(50% + 45px);
+				letter-spacing: 6px;
+				text-align: center;
+				margin: 0;
+				line-height: 45px;
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+			h1.title small {
+				font-size: 25px;
+    			letter-spacing: 1px;
+				margin: 0;
+				line-height: 0;
+			}
+			p {
+				font-family: "Open Sans", sans-serif;
+				color: white;
+				text-align: center;
+				position: relative;
+				top: 10px;
+				font-size: 28px;
+				margin: 0;
+			}
+			p.title::before {
+				content: "“";
+				padding-right: 5px;
+			}
+			p.title::after {
+				content: "”";
+				padding-left: 5px;
+			}
+			p.subtitle {
+				font-size: 16px;
+				max-width: 86%;
+				margin: 0 auto;
+			}
+			.shadow {
+				text-shadow:
+				-1px -1px 0 #000,  
+				1px -1px 0 #000,
+				-1px 1px 0 #000,
+				1px 1px 0 #000;
+			}
+			#slider {
+				position: fixed;
+				height: 100%;
+				width: 7%;
+				background-color: black;
+				opacity: 0.7;
+				top: 0;
+				right: 0;
+			}
+			#scroller {
+				position: fixed;
+				top: 0;
+				width: 100%;
+				background-color: #FF4136;
+				height: 3px;
+				display: block;
+				cursor: n-resize;
+			}
+		</style>
+		<script>
+			document.addEventListener("DOMContentLoaded", function (event) {
+				var images = document.querySelectorAll("div.image");
+				var slider = document.getElementById("slider");
+				var scroller = document.getElementById("scroller");
+				// Load the slider with images
+				for (var i = 0; i < images.length; i++) {
+					var image = images[i];
+					var smallImage = document.createElement("div");
+					smallImage.setAttribute("class", "image small");
+					smallImage.style.backgroundImage = image.style.backgroundImage;
+					slider.appendChild(smallImage);
+				}
+				
+				document.addEventListener("scroll", calculateScroller);
+				
+				function calculateScroller () {
+					var body = document.body;
+					var html = document.documentElement;
+					
+					var totalHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+					var viewportHeight = window.innerHeight;
+					var currentTop = window.pageYOffset || document.documentElement.scrollTop;
+					
+					var calculatedTop = ((currentTop / totalHeight) * viewportHeight); // Uncorrected
+					calculatedTop += (viewportHeight / 50) / 2;
+					calculatedTop -= 2; // Height of scroller / 2
+					scroller.style.top = calculatedTop + "px";
+				}
+				calculateScroller();
+				
+				// Listen for drag events on the scroller
+				window.addEventListener("mouseup", function () {
+					window.removeEventListener("mousemove", mouseEvent, true);
+				});
+				slider.addEventListener("mousedown", function (e) {
+					movement(e.clientY);
+					window.addEventListener("mousemove", mouseEvent, true);
+				});
+				scroller.addEventListener("mousedown", function (downE) {
+					window.addEventListener("mousemove", mouseEvent, true);
+				});
+				function mouseEvent (e) {
+					movement(e.clientY);
+				}
+				function movement (y) {
+					//scroller.style.top = y + "px";
+					var body = document.body;
+					var html = document.documentElement;
+					var totalHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+					var viewportHeight = window.innerHeight;
+					var currentTop = window.pageYOffset || document.documentElement.scrollTop;
+					// Basically the opposite of calculateScroller()
+					y += 2;
+					y -= (viewportHeight / 50) / 2;
+					var currentTop = (y / viewportHeight) * totalHeight;
+					window.scrollTo(0, currentTop);
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="container">
+			<video autoplay loop>
+				<source src="videos/Battlefield Cinemagraph Soldier.webm" type="video/webm">
+				<source src="videos/Battlefield Cinemagraph Soldier.mp4" type="video/mp4">
+			</video>
+			<h1 class="title shadow">
+				Battlefield
+				<br />
+				<small>
+					Explore the history
+				</small>
+			</h1>
+			<!--
+			<p class="title">
+				See how we got here
+				<br />
+				&darr;
+			</p>
+			-->
+		</div>
+		<div class="page">
+			<div class="image" style="background-image: url('images/Battlefield Bad Company 2 Key.jpg');">
+				<p class="title shadow">Welcome to Bad Company</p>
+				<!-- Key art from Battlefield Bad Company 2 -->
+				<p class="subtitle shadow">Private Preston Marlowe, a member of U.S. Army's 222nd Battalion, B "Bad" Company, deploys to South America with support from an M1A2 tank and AH-64 Apache helicopters (2010)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield Bad Company 2 Onslaught.jpg');">
+				<p class="title shadow">'P.S. Invasion cancelled, sir'</p>
+				<!-- Promo art for Onslaught mode in Battlefield Bad Company 2 -->
+				<p class="subtitle shadow">Private Terrence Sweetwater on patrol with the rest of 222nd Battalion's B-Company (2010)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield Bad Company 2 Infantry.jpg');">
+				<p class="title shadow">Heart of Darkness</p>
+				<p class="subtitle shadow">Pvt. Marlowe, Pvt. Sweetwater, and Pvt. Haggard of B-Company navigate Bolvian countryside (2010)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield Bad Company 2 Vietnam.jpg');">
+				<p class="title shadow">Vietnam</p>
+				<!-- Promo art for Battlefield Bad Company 2: Vietnam -->
+				<p class="subtitle shadow">An unknown U.S. Army soldier involved in U.S. operations in Vietnam poses while UH-1 "Huey" and F-4 Phantom aircraft fly overhead (2010)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Back to Karkand.jpg');">
+				<p class="title shadow">Gulf of Oman</p>
+				<!-- Battlefield heads to the Middle East in Battlefield 3 -->
+				<p class="subtitle shadow">The U.S. Marine Corps secures a beachhead in the Strait of Hormuz near the Gulf of Oman (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Aerial Combat.jpg');">
+				<p class="title shadow">Going Hunting</p>
+				<!-- Battlefield 3 brings fast-paced jet combat and dogfights back to the Battlefield franchise for the first time in six years -->
+				<p class="subtitle shadow">Russian Su-27 "Flanker" aircraft intercept and engage U.S. F/A-18 Hornet aircraft over Iran (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Armored Combat.jpg');">
+				<p class="title shadow">Thunder Run</p>
+				<p class="subtitle shadow">M1A2 tanks roll through the streets of eastern Iraq near the Iranian border (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Co-op Combat.jpg');">
+				<p class="title shadow">Exfiltration</p>
+				<p class="subtitle shadow">U.S. Marines fight their way to their extraction point in Baghdad, Iraq (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Combat 1.jpg');">
+				<p class="title shadow">Rock and a Hard Place</p>
+				<p class="subtitle shadow">A U.S. Marine engages Russian paratroopers in Iran's Araz Valley (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Combat 2.jpg');">
+				<p class="title shadow">Contact Left!</p>
+				<p class="subtitle shadow">A U.S. Marine provides covering fire with his M16 rifle in Sulaymaniyah, Iraq (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Infantry Combat.jpg');">
+				<p class="title shadow">Semper Fidelis</p>
+				<p class="subtitle shadow">Elements of fireteam Misfit 1-3 search for a U.S. squad in Iraqi Kurdistan (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 PLR.jpg');">
+				<p class="title shadow">SSgt Henry Blackburn</p>
+				<p class="subtitle shadow">Staff Sergeant Henry Blackburn arrives in Iraqi Kurdistan with the rest of fireteam Misfit 1-3 (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Russians in Paris.jpg');">
+				<p class="title shadow">Russians in Paris</p>
+				<p class="subtitle shadow">Russian GRU agents work to prevent the detonation of nuclear device at the EURONEXT Exchange, Paris (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Caspian Border.jpg');">
+				<p class="title shadow">Caspian Border</p>
+				<p class="subtitle shadow">U.S. forces engage Russian elements at the heavily fortified Turkmen-Iranian Border (2011)</p> 
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Damavand Peak.jpg');">
+				<p class="title shadow">Damavand Peak</p>
+				<p class="subtitle shadow">U.S. Marines fight their way off Mount Damavand in Iran to the valley below (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Grand Bazaar.jpg');">
+				<p class="title shadow">Grand Bazaar</p>
+				<p class="subtitle shadow">U.S. and Russian infantry with light armor support fight to take Tehran's Grand Bazaar (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Kharg Island.jpg');">
+				<p class="title shadow">Kharg Island</p>
+				<p class="subtitle shadow">American Marines launch an assult on Kharg Island in the Persian Gulf from the USS <i>Essex</i> (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Noshahr Canals.jpg');">
+				<p class="title shadow">Noshahr Canals</p>
+				<p class="subtitle shadow">U.S. Marines launch a strike upon a strategically important harbor by the Noshahr Canals on the Iranian coast (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Operation Firestorm.jpg');">
+				<p class="title shadow">Operation Firestorm</p>
+				<p class="subtitle shadow">The U.S. and Russia launch large scale assaults to control Iran's largest source of oil: the Azadegan oil field (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Operation Metro.png');">
+				<p class="title shadow">Operation Métro</p>
+				<p class="subtitle shadow">U.S. forces push through the Paris Metro to secure the financial district in central Paris (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Seine Crossing.png');">
+				<p class="title shadow">Seine Crossing</p>
+				<p class="subtitle shadow">Fighting breaks out between American and Russian forces at Pont Saint-Michel in the 7th arrondissement of Paris (2011)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Close Quarters.jpg');">
+				<p class="title shadow">Close Quarters</p>
+				<p class="subtitle shadow">CQB fighting breaks out in buildings across Tehran, Iran (2012)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Armored Kill Landscape 1.jpg');">
+				<p class="title shadow">Armored Kill</p>
+				<p class="subtitle shadow">An M1A2 Abrams tank and a M1128 Mobile Gun System engage targets in Iran's Bandar Desert by the Caspian Sea (2012)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Armored Kill Landscape 2.jpg');">
+				<p class="title shadow">Target Destroyed</p>
+				<p class="subtitle shadow">A Russian 2S25 Sprut-SD engages and destroys its target in the Bandar Desert (2012)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Aftermath 1.jpg');">
+				<p class="title shadow">Epicenter</p>
+				<p class="subtitle shadow">A struggle for supremacy and survival continues in the shattered districts, streets and cities of post-earthquake Iran (2012)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Aftermath 2.jpg');">
+				<p class="title shadow">Azadi Palace</p>
+				<p class="subtitle shadow">Fighting continues in and around an Iranian Parliament building in Tehran after a 8.1 magnitude earthquake (2012)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 3 Aftermath 3.jpg');">
+				<p class="title shadow">Talah Market</p>
+				<p class="subtitle shadow">Vertical infantry combat breaks out a market in Yazd, central Iran (2012)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Key.png');">
+				<p class="title shadow">Tombstone Actual</p>
+				<p class="subtitle shadow">Sergeant Daniel Recker of fireteam Tombstone deployed to Shanghai, China (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Key 2.png');">
+				<p class="title shadow">Jin Jié's Revolution</p>
+				<p class="subtitle shadow">Tombstone and Sgt. Recker are deployed to Shanghai, China to prevent a military coup d'état (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Key 3.jpg');">
+				<p class="title shadow">Eight Seventy</p>
+				<p class="subtitle shadow">Sergeant Recker advances under fire with a Remington 870 MCS pump-action shotgun (2013)</p>
+			</div>
+			<!--
+			<div class="image" style="background-image: url('images/Battlefield 4 Key Infantry.jpg');">
+				<p class="title shadow">Ready 4 Battle</p>
+				<p class="subtitle shadow">(2013)</p>
+			</div>
+			-->
+			<div class="image" style="background-image: url('images/Battlefield 4 Campaign 1.jpg');">
+				<p class="title shadow">Under Fire</p>
+				<p class="subtitle shadow">Members of U.S. Marines fireteam Tombstone dodge fire from an Mi-28 Havoc attack helicopter (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Campaign 2.jpg');">
+				<p class="title shadow">Dunn's Down</p>
+				<p class="subtitle shadow">Staff Sergeant William Dunn lies wounded by falling debris (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Campaign 3.jpg');">
+				<p class="title shadow">Fishing in Baku</p>
+				<p class="subtitle shadow">Staff Sergeant Kimble "Irish" Graves surveys the adjacent building while on a mission to secure intelligence in Baku, Azerbaijan (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Campaign 4.jpg');">
+				<p class="title shadow">Extraction Point</p>
+				<p class="subtitle shadow">Members of fireteam Tombstone fight their way through Russian resistance to their extraction point near the Caspian Sea (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Campaign 5.jpg');">
+				<p class="title shadow">USS <i>Titan</i></p>
+				<p class="subtitle shadow">Sergeant Clayton "Pac" Pakowski lays down fire onboard the stricken aircraft carrier USS <i>Titan</i> in the South China Sea (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Siege of Shanghai.jpg');">
+				<p class="title shadow">Shanghai Harbor</p>
+				<p class="subtitle shadow">A U.S. Army Ranger looks on as his ship transits Shanghai Harbor during peacekeeping operations (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 CTE.png');">
+				<p class="title shadow">Rough Journey</p>
+				<p class="subtitle shadow">Sgt. Recker dodges incoming fire during operations on the Chinese mainland (2014)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 China Rising.jpg');">
+				<p class="title shadow">China Rising</p>
+				<p class="subtitle shadow">Fighting between the U.S. and China reaches the vast and majestic Chinese mainland (2013)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Second Assault.jpg');">
+				<p class="title shadow">Second Assault</p>
+				<p class="subtitle shadow">A U.S. Marine Corps Combat Engineer launches a Shoulder-Launched Multipurpose Assault Weapon (SMAW) during operations to resecure the Paris Metro and the EURONEXT exchange (2014)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Naval Strike.jpg');">
+				<p class="title shadow">Naval Strike</p>
+				<p class="subtitle shadow">The USS <i>Gerald R. Ford</i> carrier battle group enters the South China Sea as F/A-18 Hornets launch to attack the Chinese Armada (2014)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Dragon\'s Teeth.jpg');">
+				<p class="title shadow">Dragon's Teeth</p>
+				<p class="subtitle shadow">A U.S. Marine wields a Remington 870 MCS and navigates dragon's teeth fortifications as urban warfare takes place in war-torn cities locked down by the Chinese army (2014)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 4 Final Stand.jpg');">
+				<p class="title shadow">Final Stand</p>
+				<p class="subtitle shadow">The U.S. sends in Marines upon recieving intel that Russia has been secretly developing new technology in the far north for the next stage of warfare (2014)</p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 1 Reveal 1.jpg');">
+				<p class="title shadow">Fokker Dr.I</p>
+				<p class="subtitle shadow"></p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 1 Reveal 2.jpg');">
+				<p class="title shadow">Lawrence of Arabia</p>
+				<p class="subtitle shadow"></p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 1 Reveal 3.jpg');">
+				<p class="title shadow">Flammenwerfer</p>
+				<p class="subtitle shadow"></p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 1 Reveal 4.jpg');">
+				<p class="title shadow">Dreadnought</p>
+				<p class="subtitle shadow"></p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 1 Reveal 5.jpg');">
+				<p class="title shadow">Awestruck</p>
+				<p class="subtitle shadow"></p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 1 Reveal 6.jpg');">
+				<p class="title shadow">Zeppelin</p>
+				<p class="subtitle shadow"></p>
+			</div>
+			<div class="image" style="background-image: url('images/Battlefield 1 Reveal 7.jpg');">
+				<p class="title shadow">British Heavy Tank Mark V</p>
+				<p class="subtitle shadow"></p>
+			</div>
+			<!-- Final image -->
+			<!--<div class="image" style="background-image: url('images/Battlefield 1 Key.jpg');">
+				<p class="subtitle shadow">Key art from Battlefield 1 (2016)</p>
+			</div>-->
+			<!-- Slider -->
+			<div id="slider">
+				<span id="scroller"></span>
+				<div class="image small" style="background-image: url('images/Battlefield 1 Key.jpg');"></div>
+			</div>
+		</div>
+	</body>
+</html>
